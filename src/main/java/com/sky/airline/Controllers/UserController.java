@@ -1,16 +1,13 @@
-package com.sky.airline.Controller;
+package com.sky.airline.Controllers;
 
-import com.sky.airline.Configure.JwtTokenProvider;
-import com.sky.airline.Entity.AuthRequest;
-import com.sky.airline.Entity.User;
-import com.sky.airline.Services.ISendMailService;
+import com.sky.airline.Config.JwtTokenProvider;
+import com.sky.airline.Dto.AuthRequest;
+import com.sky.airline.Entities.User;
 import com.sky.airline.Services.IUserService;
 import com.sky.airline.Services.KafkaService.ProducerService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

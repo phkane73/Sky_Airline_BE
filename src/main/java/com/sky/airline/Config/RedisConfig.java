@@ -1,10 +1,11 @@
-package com.sky.airline.Configure;
+package com.sky.airline.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
 @Configuration
@@ -25,5 +26,17 @@ public class RedisConfig {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory());
         return template;
+    }
+
+    @Bean
+    public RedisTemplate<Integer, Object> redisTemplateInt(){
+        RedisTemplate<Integer, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory());
+        return template;
+    }
+
+    @Bean
+    public HashOperations<Integer, Integer, Object> hashOperations(RedisTemplate<Integer, Object> redisTemplate) {
+        return redisTemplate.opsForHash();
     }
 }

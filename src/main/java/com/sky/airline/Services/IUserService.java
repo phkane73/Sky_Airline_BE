@@ -1,7 +1,7 @@
 package com.sky.airline.Services;
 
-import com.sky.airline.Entity.AuthRequest;
-import com.sky.airline.Entity.User;
+import com.sky.airline.Dto.AuthRequest;
+import com.sky.airline.Entities.User;
 import jakarta.mail.MessagingException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

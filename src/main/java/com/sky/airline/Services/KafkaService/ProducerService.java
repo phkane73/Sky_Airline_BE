@@ -1,6 +1,6 @@
 package com.sky.airline.Services.KafkaService;
 
-import com.sky.airline.Entity.User;
+import com.sky.airline.Entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;

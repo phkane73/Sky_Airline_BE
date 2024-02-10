@@ -1,4 +1,4 @@
-package com.sky.airline.Configure;
+package com.sky.airline.Config;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Component;

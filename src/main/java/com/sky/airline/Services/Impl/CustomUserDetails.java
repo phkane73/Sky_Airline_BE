@@ -1,6 +1,6 @@
 package com.sky.airline.Services.Impl;
 
-import com.sky.airline.Entity.AuthRequest;
+import com.sky.airline.Dto.AuthRequest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

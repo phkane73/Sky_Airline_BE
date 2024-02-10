@@ -1,4 +1,4 @@
-package com.sky.airline.Entity;
+package com.sky.airline.Dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

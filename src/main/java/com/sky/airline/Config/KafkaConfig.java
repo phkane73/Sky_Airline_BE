@@ -1,4 +1,4 @@
-package com.sky.airline.Configure;
+package com.sky.airline.Config;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.springframework.beans.factory.annotation.Value;

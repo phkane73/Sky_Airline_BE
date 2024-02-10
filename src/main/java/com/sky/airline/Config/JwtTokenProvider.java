@@ -1,4 +1,4 @@
-package com.sky.airline.Configure;
+package com.sky.airline.Config;
 
 import com.sky.airline.Services.Impl.CustomUserDetails;
 import io.jsonwebtoken.*;
