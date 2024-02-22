@@ -18,7 +18,7 @@ public interface IAirportService {
 
     List<Airport> listAirportNoFlightTime(int id);
 
-    void deactiveAirport(int id);
+    void deActiveAirport(int id);
 
     boolean activeAirport(int id);
 }

@@ -1,7 +1,9 @@
 package com.sky.airline.Services.Impl;
 
+import com.sky.airline.Dto.PlaneDTO;
 import com.sky.airline.Entities.Airport;
 import com.sky.airline.Entities.Plane;
+import com.sky.airline.Repositories.IAirportRepository;
 import com.sky.airline.Repositories.IPlaneRepository;
 import com.sky.airline.Services.IPlaneService;
 import lombok.RequiredArgsConstructor;
@@ -11,19 +13,28 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PlaneServiceIplm implements IPlaneService {
+public class PlaneServiceImpl implements IPlaneService {
 
     private final IPlaneRepository planeRepository;
 
-    @Override
-    public void addPlane(Plane plane) {
-        planeRepository.save(plane);
-    }
+    private final IAirportRepository airportRepository;
 
     @Override
-    public void addPlaneOnAirport(Plane plane, Airport airport) {
+    public boolean addPlane(PlaneDTO planeDTO) {
+        List<Plane> planeList = planeRepository.findAll();
+        for(Plane p : planeList){
+            if(planeDTO.getPlaneName().equals(p.getPlaneName())){
+                return false;
+            }
+        }
+        Plane plane = new Plane();
+        Airport airport = airportRepository.findById(planeDTO.getIdAirport()).get();
+        plane.setPlaneName(planeDTO.getPlaneName());
         plane.setOnAirport(airport);
+        plane.setSeatQuanlity(26);
+        plane.setOperation(true);
         planeRepository.save(plane);
+        return true;
     }
 
     @Override
@@ -50,6 +61,20 @@ public class PlaneServiceIplm implements IPlaneService {
     public void updatePlaneOnAirport(String planeName, Airport airport) {
         Plane plane = planeRepository.findByPlaneName(planeName);
         plane.setOnAirport(airport);
+        planeRepository.save(plane);
+    }
+
+    @Override
+    public void activePlane(int id) {
+        Plane plane = planeRepository.findById(id).get();
+        plane.setOperation(true);
+        planeRepository.save(plane);
+    }
+
+    @Override
+    public void deActivePlane(int id) {
+        Plane plane = planeRepository.findById(id).get();
+        plane.setOperation(false);
         planeRepository.save(plane);
     }
 }

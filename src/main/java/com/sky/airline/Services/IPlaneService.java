@@ -1,14 +1,13 @@
 package com.sky.airline.Services;
 
+import com.sky.airline.Dto.PlaneDTO;
 import com.sky.airline.Entities.Airport;
 import com.sky.airline.Entities.Plane;
 
 import java.util.List;
 
 public interface IPlaneService {
-    void addPlane(Plane plane);
-
-    void addPlaneOnAirport(Plane plane, Airport airport);
+    boolean addPlane(PlaneDTO plane);
 
     Plane findPlaneById(int id);
 
@@ -19,4 +18,8 @@ public interface IPlaneService {
     int currentQuanlityPlaneOnAirport(Airport airport);
 
     void updatePlaneOnAirport(String planeName, Airport airport);
+
+    void activePlane(int id);
+
+    void deActivePlane(int id);
 }

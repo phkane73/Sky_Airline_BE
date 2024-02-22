@@ -1,5 +1,6 @@
 package com.sky.airline.Controllers;
 
+import com.sky.airline.Dto.PlaneDTO;
 import com.sky.airline.Entities.Airport;
 import com.sky.airline.Entities.Plane;
 import com.sky.airline.Services.IAirportService;
@@ -17,19 +18,25 @@ public class PlaneController {
 
     private final IPlaneService planeService;
 
-    private final IAirportService airportService;
     @PostMapping("/add")
-    public ResponseEntity<?> addPlane(@RequestBody Plane plane){
-        planeService.addPlane(plane);
-        return new ResponseEntity<>("Add plane success!", HttpStatus.OK);
+    public ResponseEntity<?> addPlane(@RequestBody PlaneDTO plane){
+        return new ResponseEntity<>(planeService.addPlane(plane),HttpStatus.OK);
     }
 
-    @GetMapping("/addtoairport")
-    public ResponseEntity<?> addPlaneToAirport(@RequestParam("plane_id") int plane_id,
-                                               @RequestParam("airport_id") int airport_id){
-        Airport airport = airportService.findAirportById(airport_id);
-        Plane plane = planeService.findPlaneById(plane_id);
-        planeService.addPlaneOnAirport(plane, airport);
-        return new ResponseEntity<>("Add "+plane.getPlaneName()+" on "+airport.getAirportName(), HttpStatus.OK);
+    @GetMapping("/list")
+    public ResponseEntity<?> allPlane(){
+        return new ResponseEntity<>(planeService.allPlane(), HttpStatus.OK);
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<?>  activeAirport(@RequestParam("id") int id) {
+        planeService.activePlane(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/deactive")
+    public ResponseEntity<?>  deActiveAirport(@RequestParam("id") int id) {
+        planeService.deActivePlane(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

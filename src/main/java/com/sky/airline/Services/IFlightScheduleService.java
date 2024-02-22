@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface IFlightScheduleService {
+
+    List<FlightSchedule> listSchedule();
     LocalDateTime converToLocalDataTime(String date);
 
     boolean overLimitTime(LocalDateTime timeArrival, LocalDateTime endTimeSchedule);
@@ -24,17 +26,11 @@ public interface IFlightScheduleService {
 
     List<AirportDTO> listAirportTrim(List<AirportDTO> airportList, AirportDTO currentAirport);
 
-    void handleFlightSchedule(List<FlightTime> flightTimeDTOList, String start, String end, int action);
+    List<FlightSchedule> handleFlightSchedule(List<FlightTime> flightTimeDTOList, String start, String end, int action);
 
     List<PlaneDTO> converToPlaneDTO(List<Plane> planeList, LocalDateTime startDate);
 
     List<AirportDTO> converToAirportDTO(List<Airport> airportList, LocalDateTime startDateTime);
-
-    void saveFlightScheduleWithRedis(FlightSchedule flightSchedule, int key);
-
-    void deleteFlightScheduleWithRedis();
-
-    Map<Integer, Object> getAllFlightScheduleWithRedis();
 
     boolean checkFlightTime(List<FlightTime> flightTime, AirportDTO departureAirport, AirportDTO arrivalAirport);
 }

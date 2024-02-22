@@ -25,19 +25,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FlightScheduleServiceImpl implements IFlightScheduleService {
 
-    private final PlaneServiceIplm planeService;
+    private final PlaneServiceImpl planeService;
 
     private final AirportServiceImpl airportService;
 
     private final IFlightScheduleRepository flightScheduleRepository;
     private final static String dateTimePattern = "yyyy-MM-dd HH:mm";
 
-    private final static Integer FLIGHT_SCHEDULE_KEY = 12313;
-
-    private final HashOperations<Integer, Integer, Object> hashOperations;
-
-    private final RedisTemplate<Integer, Object> redisTemplate;
-
+    @Override
+    public List<FlightSchedule> listSchedule() {
+        return flightScheduleRepository.findAll();
+    }
 
     @Override
     public LocalDateTime converToLocalDataTime(String date) {
@@ -87,10 +85,12 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
     public List<PlaneDTO> converToPlaneDTO(List<Plane> planeList, LocalDateTime startDateTime) {
         List<PlaneDTO> planeDTOList = new ArrayList<>();
         for (Plane plane : planeList) {
-            PlaneDTO p = new PlaneDTO();
-            p.setPlaneName(plane.getPlaneName());
-            p.setReadyTime(startDateTime);
-            planeDTOList.add(p);
+            if (plane.isOperation()) {
+                PlaneDTO p = new PlaneDTO();
+                p.setPlaneName(plane.getPlaneName());
+                p.setReadyTime(startDateTime);
+                planeDTOList.add(p);
+            }
         }
         return planeDTOList;
     }
@@ -114,30 +114,6 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
     }
 
     @Override
-    public void saveFlightScheduleWithRedis(FlightSchedule flightSchedule, int key) {
-        hashOperations.put(FLIGHT_SCHEDULE_KEY, key, flightSchedule);
-        redisTemplate.expire(FLIGHT_SCHEDULE_KEY, 30, TimeUnit.MINUTES);
-    }
-
-    @Override
-    public void deleteFlightScheduleWithRedis() {
-        redisTemplate.delete(FLIGHT_SCHEDULE_KEY);
-    }
-
-    @Override
-    public Map<Integer, Object> getAllFlightScheduleWithRedis() {
-        Map<Integer, Object> map = hashOperations.entries(FLIGHT_SCHEDULE_KEY);
-        return map.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
-    }
-
-    @Override
     public boolean checkFlightTime(List<FlightTime> flightTimeDTOList, AirportDTO departureAirport, AirportDTO arrivalAirport) {
         Airport from = airportService.findAirportByAirportName(departureAirport.getAirportName());
         Airport to = airportService.findAirportByAirportName(arrivalAirport.getAirportName());
@@ -145,13 +121,15 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
         return !ls.isEmpty();
     }
 
+
     @Override
-    public void handleFlightSchedule(List<FlightTime> flightTimeList, String start, String end, int action) {
+    public List<FlightSchedule> handleFlightSchedule(List<FlightTime> flightTimeList, String start, String end, int action) {
         LocalDateTime startDate = converToLocalDataTime(start);
         LocalDateTime endDate = converToLocalDataTime(end);
         List<FlightScheduleDTO> flightSchedules = new ArrayList<>();
         List<Airport> airportList = airportService.allAirport();
         List<AirportDTO> airportDTOList = converToAirportDTO(airportList, startDate);
+
         int breakPoint = 0;
         while (breakPoint == 0) {
             LocalDateTime currentTimeFlight = startDate;
@@ -162,6 +140,7 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
                 for (AirportDTO airport : listAirportNoCurrentAirport) {
                     stackAirport.push(airport);
                 }
+                List<PlaneDTO> listPlaneScheduled = new ArrayList<>();
                 for (int j = 0; j < quanlityPlaneCurrent; j++) {
                     if (!stackAirport.isEmpty()) {
                         if (checkFlightTime(flightTimeList, airportDTOList.get(i), stackAirport.peek())) {
@@ -186,13 +165,17 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
 
                             flightScheduleDTO.setPlaneName(airportDTOList.get(i).getPlaneLists().get(j).getPlaneName());
                             airportDTOList.get(i).setQuanlityPlaneCurrent(airportDTOList.get(i).getQuanlityPlaneCurrent() - 1);
+                            listPlaneScheduled.add(airportDTOList.get(i).getPlaneLists().get(j));
                             flightScheduleDTO.setDepartureTime(readyTime);
                             flightScheduleDTO.setArrivalTime(timeArrival);
                             flightSchedules.add(flightScheduleDTO);
-                        }else{
+                        } else {
                             stackAirport.pop();
                         }
                     }
+                }
+                for (PlaneDTO planeDTO : listPlaneScheduled) {
+                    airportDTOList.get(i).getPlaneLists().remove(planeDTO);
                 }
                 if (compareTwoDates(currentTimeFlight, endDate)) {
                     breakPoint = 1;
@@ -201,11 +184,15 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
             }
             if (breakPoint == 1) break;
         }
-
+        List<FlightSchedule> flightScheduleList = new ArrayList<>();
+        int index = 0;
         for (FlightScheduleDTO flightScheduleDTO : flightSchedules) {
             Airport from = airportService.findAirportByAirportName(flightScheduleDTO.getFrom().getAirportName());
             Airport to = airportService.findAirportByAirportName(flightScheduleDTO.getTo().getAirportName());
             FlightSchedule flightSchedule = new FlightSchedule();
+            if (action == 0) {
+                flightSchedule.setId(index);
+            }
             flightSchedule.setDepartureAirport(from);
             flightSchedule.setArrivalAirport(to);
             flightSchedule.setPlaneName(flightScheduleDTO.getPlaneName());
@@ -213,17 +200,14 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
             flightSchedule.setArrivalTime(flightScheduleDTO.getArrivalTime());
             flightSchedule.setFlightCode("SKYD" + flightScheduleDTO.getDepartureTime().getDayOfMonth() +
                     flightScheduleDTO.getDepartureTime().getHour() + "H" + flightSchedules.indexOf(flightScheduleDTO));
-            if (action == 0) {
-                flightSchedule.setId(flightSchedules.indexOf(flightScheduleDTO));
-                saveFlightScheduleWithRedis(flightSchedule, flightSchedules.indexOf(flightScheduleDTO));
-            }
+            flightScheduleList.add(flightSchedule);
 
             if (action == 1) {
                 flightScheduleRepository.save(flightSchedule);
-                deleteFlightScheduleWithRedis();
             }
+            index++;
         }
+        return flightScheduleList;
     }
-
 
 }

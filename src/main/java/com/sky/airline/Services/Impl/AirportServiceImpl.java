@@ -5,6 +5,7 @@ import com.sky.airline.Entities.FlightTime;
 import com.sky.airline.Entities.Plane;
 import com.sky.airline.Repositories.IAirportRepository;
 import com.sky.airline.Repositories.IFlightTimeRepository;
+import com.sky.airline.Repositories.IPlaneRepository;
 import com.sky.airline.Services.IAirportService;
 import com.sky.airline.Services.IPlaneService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class AirportServiceImpl implements IAirportService {
 
     private final IAirportRepository airportRepository;
 
-    private final IPlaneService planeService;
+    private final IPlaneRepository planeService;
 
     private final IFlightTimeRepository flightTimeService;
 
@@ -43,7 +44,7 @@ public class AirportServiceImpl implements IAirportService {
 
     @Override
     public List<Plane> listPlaneOnAirport(Airport airport) {
-        return planeService.listAllPlaneOnAirport(airport);
+        return planeService.findAllByOnAirport(airport);
     }
 
     @Override
@@ -83,7 +84,7 @@ public class AirportServiceImpl implements IAirportService {
     }
 
     @Override
-    public void deactiveAirport(int id) {
+    public void deActiveAirport(int id) {
         Airport airport = airportRepository.findById(id).get();
         List<FlightTime> flightTimes = flightTimeService.findAll();
         for(FlightTime flightTime: flightTimes){

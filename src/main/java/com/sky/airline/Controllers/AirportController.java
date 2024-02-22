@@ -3,6 +3,7 @@ package com.sky.airline.Controllers;
 import com.sky.airline.Entities.Airport;
 import com.sky.airline.Entities.FlightTime;
 import com.sky.airline.Entities.Plane;
+import com.sky.airline.Repositories.IPlaneRepository;
 import com.sky.airline.Services.IAirportService;
 import com.sky.airline.Services.IFlightTimeService;
 import com.sky.airline.Services.IPlaneService;
@@ -23,7 +24,7 @@ public class AirportController {
 
     private final IFlightTimeService flightTimeService;
 
-    private final IPlaneService planeService;
+    private final IPlaneRepository planeService;
 
     @PostMapping("/add")
     public ResponseEntity<?> addAirport(@RequestBody Airport airport) {
@@ -53,7 +54,7 @@ public class AirportController {
     @GetMapping("/getallplane")
     public ResponseEntity<?> getAllPlanes(@RequestParam("id") int id) {
         Airport airport = airportService.findAirportById(id);
-        List<Plane> planeList = planeService.listAllPlaneOnAirport(airport);
+        List<Plane> planeList = planeService.findAllByOnAirportAndIsOperationIsTrue(airport);
         if (planeList.isEmpty()) {
             return new ResponseEntity<>(false, HttpStatus.OK);
         }
@@ -74,7 +75,7 @@ public class AirportController {
 
     @GetMapping("/deactive")
     public ResponseEntity<?>  deActiveAirport(@RequestParam("id") int id) {
-        airportService.deactiveAirport(id);
+        airportService.deActiveAirport(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -18,13 +18,13 @@ public class Plane {
     private Integer id;
     private String planeName;
     private Integer seatQuanlity;
+    private boolean isOperation;
     @ManyToOne
     @JoinColumn(name = "airport_id", referencedColumnName = "airport_id")
-    @JsonIgnore
     private Airport onAirport;
 
-    public Plane(String planeName, Integer seatQuanlity) {
+    public Plane(String planeName, Airport onAirport) {
         this.planeName = planeName;
-        this.seatQuanlity = seatQuanlity;
+        this.onAirport = onAirport;
     }
 }

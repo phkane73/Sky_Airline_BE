@@ -12,4 +12,10 @@ import java.time.LocalDateTime;
 public class PlaneDTO {
     private String planeName;
     private LocalDateTime readyTime;
+    private int idAirport;
+
+    public PlaneDTO(String planeName, int idAirport) {
+        this.planeName = planeName;
+        this.idAirport = idAirport;
+    }
 }

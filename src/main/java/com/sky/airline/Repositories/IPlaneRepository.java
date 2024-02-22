@@ -11,6 +11,7 @@ import java.util.List;
 public interface IPlaneRepository extends JpaRepository<Plane, Integer> {
 
     List<Plane> findAllByOnAirport(Airport onAirport);
+    List<Plane> findAllByOnAirportAndIsOperationIsTrue(Airport onAirport);
 
     int countByOnAirport(Airport airport);
 
