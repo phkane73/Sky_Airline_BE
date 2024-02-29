@@ -27,6 +27,7 @@ public class FlightTimeServiceImpl implements IFlightTimeService {
         flightTime.setFrom(form);
         flightTime.setTo(to);
         flightTime.setEstimateTime(flightTimeDTO.getEstimateTime());
+        flightTime.setPrice(flightTimeDTO.getPrice());
         flightTimeRepository.save(flightTime);
     }
 

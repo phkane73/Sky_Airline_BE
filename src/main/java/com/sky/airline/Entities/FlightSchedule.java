@@ -27,4 +27,5 @@ public class FlightSchedule implements Serializable {
     private LocalDateTime arrivalTime;
     private String planeName;
     private String flightCode;
+    private Long price;
 }

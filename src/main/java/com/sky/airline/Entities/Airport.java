@@ -19,9 +19,11 @@ public class Airport implements Serializable {
     private Integer id;
     private String airportName;
     private boolean isOperation;
+    private String location;
 
-    public Airport(String airportName) {
+    public Airport(String airportName, String location) {
         this.airportName = airportName;
+        this.location = location;
     }
 
 }

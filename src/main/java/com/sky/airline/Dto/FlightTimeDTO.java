@@ -12,4 +12,5 @@ public class FlightTimeDTO {
     private int from;
     private int to;
     private float estimateTime;
+    private Long price;
 }

@@ -24,8 +24,6 @@ public class FlightScheduleController {
 
     private final IFlightScheduleService flightScheduleService;
 
-//    private final IFlightScheduleRepository flightScheduleRepository;
-
     private final IFlightTimeService flightTimeService;
 
 
@@ -40,5 +38,12 @@ public class FlightScheduleController {
     @GetMapping("/list")
     public ResponseEntity<?> getAllSchedule() {
         return new ResponseEntity<>(flightScheduleService.listSchedule(), HttpStatus.OK);
+    }
+
+    @GetMapping("/findflight")
+    public ResponseEntity<?> findAllFlight(@RequestParam("departure") int departureId,
+                                           @RequestParam("arrival") int arrivalId,
+                                           @RequestParam("date") String date) {
+        return new ResponseEntity<>(flightScheduleService.findFlightSchedule(departureId,arrivalId,date), HttpStatus.OK);
     }
 }

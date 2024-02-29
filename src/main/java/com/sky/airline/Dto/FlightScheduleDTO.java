@@ -15,4 +15,5 @@ public class FlightScheduleDTO {
     private AirportDTO from;
     private AirportDTO to;
     private String planeName;
+    private Long price;
 }

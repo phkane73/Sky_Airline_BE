@@ -6,6 +6,8 @@ import com.sky.airline.Entities.Plane;
 import java.util.List;
 
 public interface IAirportService {
+
+    List<Airport> listAirportIsOperation();
     boolean addAirport(Airport airport);
 
     Airport findAirportById(int id);
@@ -15,6 +17,8 @@ public interface IAirportService {
     List<Airport> allAirport();
 
     Airport findAirportByAirportName(String airportName);
+
+    List<Airport> listAirportFlightTime(int id);
 
     List<Airport> listAirportNoFlightTime(int id);
 

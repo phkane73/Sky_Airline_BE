@@ -25,6 +25,11 @@ public class AirportServiceImpl implements IAirportService {
     private final IFlightTimeRepository flightTimeService;
 
     @Override
+    public List<Airport> listAirportIsOperation() {
+        return airportRepository.findAllByIsOperationIsTrue();
+    }
+
+    @Override
     public boolean addAirport(Airport airport) {
         List<Airport> airportList = airportRepository.findAll();
         for (Airport a : airportList) {
@@ -58,6 +63,23 @@ public class AirportServiceImpl implements IAirportService {
     }
 
     @Override
+    public List<Airport> listAirportFlightTime(int id) {
+        Airport currentAirport = airportRepository.findById(id).get();
+        List<Airport> allAirport = airportRepository.findAllByIsOperationIsTrue();
+        List<Airport> results = new ArrayList<>();
+        List<FlightTime> flightTimeList = flightTimeService.findAll();
+        for (Airport airport1 : allAirport) {
+            List<FlightTime> ls = flightTimeList.stream().filter(i -> i.getFrom().equals(currentAirport) &&
+                            i.getTo().equals(airport1) || i.getFrom().equals(airport1) && i.getTo().equals(currentAirport))
+                    .toList();
+            if(!ls.isEmpty()){
+                results.add(airport1);
+            }
+        }
+        return results;
+    }
+
+    @Override
     public List<Airport> listAirportNoFlightTime(int id) {
         Airport currentAirport = airportRepository.findById(id).get();
         List<Airport> allAirport = airportRepository.findAll();
@@ -67,20 +89,20 @@ public class AirportServiceImpl implements IAirportService {
                 listAirportNoCurrentAirport.add(airport);
             }
         }
-        List<Airport> result = new ArrayList<>();
+        List<Airport> results = new ArrayList<>();
         List<FlightTime> flightTimeList = flightTimeService.findAll();
         for (Airport airport1 : listAirportNoCurrentAirport) {
             List<FlightTime> ls = flightTimeList.stream().filter(i -> i.getFrom().equals(currentAirport) &&
                     i.getTo().equals(airport1) || i.getFrom().equals(airport1) && i.getTo().equals(currentAirport))
                     .toList();
             if(ls.isEmpty()){
-                result.add(airport1);
+                results.add(airport1);
             }
         }
-        if(result.isEmpty()){
+        if(results.isEmpty()){
             return listAirportNoCurrentAirport;
         }
-        return result;
+        return results;
     }
 
     @Override

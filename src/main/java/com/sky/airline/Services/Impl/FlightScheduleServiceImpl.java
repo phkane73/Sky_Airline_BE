@@ -10,16 +10,14 @@ import com.sky.airline.Entities.Plane;
 import com.sky.airline.Repositories.IFlightScheduleRepository;
 import com.sky.airline.Services.IFlightScheduleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +49,7 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
     @Override
     public LocalDateTime calculateDate(LocalDateTime currentDate, float EstimateTime) {
         long minutesToAdd = (long) (EstimateTime * 60);
-        LocalDateTime resultDateTime = currentDate.plus(minutesToAdd, ChronoUnit.MINUTES);
-        return resultDateTime;
+        return currentDate.plusMinutes(minutesToAdd);
     }
 
     @Override
@@ -63,11 +60,11 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
     }
 
     @Override
-    public float getEstimateTime(List<FlightTime> flightTimeDTOList, AirportDTO departureAirport, AirportDTO arrivalAirport) {
+    public FlightTime getEstimateTime(List<FlightTime> flightTimeDTOList, AirportDTO departureAirport, AirportDTO arrivalAirport) {
         Airport from = airportService.findAirportByAirportName(departureAirport.getAirportName());
         Airport to = airportService.findAirportByAirportName(arrivalAirport.getAirportName());
-        List<FlightTime> ls = flightTimeDTOList.stream().filter(i -> i.getFrom().equals(from) && i.getTo().equals(to) || i.getFrom().equals(to) && i.getTo().equals(from)).collect(Collectors.toList());
-        return ls.get(0).getEstimateTime();
+        List<FlightTime> ls = flightTimeDTOList.stream().filter(i -> i.getFrom().equals(from) && i.getTo().equals(to) || i.getFrom().equals(to) && i.getTo().equals(from)).toList();
+        return ls.get(0);
     }
 
     @Override
@@ -117,8 +114,17 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
     public boolean checkFlightTime(List<FlightTime> flightTimeDTOList, AirportDTO departureAirport, AirportDTO arrivalAirport) {
         Airport from = airportService.findAirportByAirportName(departureAirport.getAirportName());
         Airport to = airportService.findAirportByAirportName(arrivalAirport.getAirportName());
-        List<FlightTime> ls = flightTimeDTOList.stream().filter(i -> i.getFrom().equals(from) && i.getTo().equals(to) || i.getFrom().equals(to) && i.getTo().equals(from)).collect(Collectors.toList());
+        List<FlightTime> ls = flightTimeDTOList.stream().filter(i -> i.getFrom().equals(from) && i.getTo().equals(to) || i.getFrom().equals(to) && i.getTo().equals(from)).toList();
         return !ls.isEmpty();
+    }
+
+    @Override
+    public List<FlightSchedule> findFlightSchedule(int departure, int arrival, String date) {
+        Airport departureAirport = airportService.findAirportById(departure);
+        Airport arrivalAirport = airportService.findAirportById(arrival);
+        LocalDateTime start = converToLocalDataTime(date);
+        LocalDateTime end = calculateDate(start,24F);
+        return flightScheduleRepository.findAllByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(departureAirport, arrivalAirport, start, end);
     }
 
 
@@ -144,7 +150,8 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
                 for (int j = 0; j < quanlityPlaneCurrent; j++) {
                     if (!stackAirport.isEmpty()) {
                         if (checkFlightTime(flightTimeList, airportDTOList.get(i), stackAirport.peek())) {
-                            float estimateTime = getEstimateTime(flightTimeList, airportDTOList.get(i), stackAirport.peek());
+                            float estimateTime = getEstimateTime(flightTimeList, airportDTOList.get(i), stackAirport.peek()).getEstimateTime();
+                            long price = getEstimateTime(flightTimeList, airportDTOList.get(i), stackAirport.peek()).getPrice();
                             LocalDateTime readyTime = airportDTOList.get(i).getPlaneLists().get(j).getReadyTime();
                             LocalDateTime timeArrival = calculateDate(readyTime, estimateTime);
                             currentTimeFlight = timeArrival;
@@ -168,6 +175,7 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
                             listPlaneScheduled.add(airportDTOList.get(i).getPlaneLists().get(j));
                             flightScheduleDTO.setDepartureTime(readyTime);
                             flightScheduleDTO.setArrivalTime(timeArrival);
+                            flightScheduleDTO.setPrice(price);
                             flightSchedules.add(flightScheduleDTO);
                         } else {
                             stackAirport.pop();
@@ -198,6 +206,7 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
             flightSchedule.setPlaneName(flightScheduleDTO.getPlaneName());
             flightSchedule.setDepartureTime(flightScheduleDTO.getDepartureTime());
             flightSchedule.setArrivalTime(flightScheduleDTO.getArrivalTime());
+            flightSchedule.setPrice(flightScheduleDTO.getPrice());
             flightSchedule.setFlightCode("SKYD" + flightScheduleDTO.getDepartureTime().getDayOfMonth() +
                     flightScheduleDTO.getDepartureTime().getHour() + "H" + flightSchedules.indexOf(flightScheduleDTO));
             flightScheduleList.add(flightSchedule);

@@ -37,8 +37,17 @@ public class AirportController {
 
     @GetMapping("/allairport")
     public ResponseEntity<?> allAirports() {
-        List<Airport> airportList = airportService.allAirport();
-        return new ResponseEntity<>(airportList, HttpStatus.OK);
+        return new ResponseEntity<>(airportService.allAirport(), HttpStatus.OK);
+    }
+
+    @GetMapping("/airportsoperation")
+    public ResponseEntity<?>  getAllAirportOperation() {
+        return new ResponseEntity<>(airportService.listAirportIsOperation(),HttpStatus.OK);
+    }
+
+    @GetMapping("/airportflighttime")
+    public ResponseEntity<?>  getAllAirportFlightTimeById(@RequestParam("id") int id) {
+        return new ResponseEntity<>(airportService.listAirportFlightTime(id),HttpStatus.OK);
     }
 
     @GetMapping("/getinfoairport")
@@ -78,6 +87,5 @@ public class AirportController {
         airportService.deActiveAirport(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 }

@@ -22,7 +22,7 @@ public interface IFlightScheduleService {
 
     boolean compareTwoDates(LocalDateTime date1, LocalDateTime date2);
 
-    float getEstimateTime(List<FlightTime> flightTime, AirportDTO departureAirport, AirportDTO arrivalAirport);
+    FlightTime getEstimateTime(List<FlightTime> flightTime, AirportDTO departureAirport, AirportDTO arrivalAirport);
 
     List<AirportDTO> listAirportTrim(List<AirportDTO> airportList, AirportDTO currentAirport);
 
@@ -33,4 +33,6 @@ public interface IFlightScheduleService {
     List<AirportDTO> converToAirportDTO(List<Airport> airportList, LocalDateTime startDateTime);
 
     boolean checkFlightTime(List<FlightTime> flightTime, AirportDTO departureAirport, AirportDTO arrivalAirport);
+
+    List<FlightSchedule> findFlightSchedule(int departure, int arrival, String date);
 }

@@ -23,7 +23,15 @@ public class FlightTime implements Serializable {
     @ManyToOne
     @JoinColumn(name = "toAirport", referencedColumnName = "airport_id")
     private Airport to;
+    private Long price;
     private float estimateTime;
+
+    public FlightTime(Airport from, Airport to, Long price, float estimateTime) {
+        this.from = from;
+        this.to = to;
+        this.price = price;
+        this.estimateTime = estimateTime;
+    }
 
     public FlightTime(Airport from, Airport to, float estimateTime) {
         this.from = from;
