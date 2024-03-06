@@ -2,10 +2,7 @@ package com.sky.airline.Services;
 
 import com.sky.airline.Dto.AirportDTO;
 import com.sky.airline.Dto.PlaneDTO;
-import com.sky.airline.Entities.Airport;
-import com.sky.airline.Entities.FlightSchedule;
-import com.sky.airline.Entities.FlightTime;
-import com.sky.airline.Entities.Plane;
+import com.sky.airline.Entities.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,4 +32,7 @@ public interface IFlightScheduleService {
     boolean checkFlightTime(List<FlightTime> flightTime, AirportDTO departureAirport, AirportDTO arrivalAirport);
 
     List<FlightSchedule> findFlightSchedule(int departure, int arrival, String date);
+
+    void createSeatWithFlightSchedule(long idSchedule);
+
 }

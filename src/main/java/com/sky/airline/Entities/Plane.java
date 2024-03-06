@@ -17,7 +17,6 @@ public class Plane {
     @Column(name = "plane_id")
     private Integer id;
     private String planeName;
-    private Integer seatQuanlity;
     private boolean isOperation;
     @ManyToOne
     @JoinColumn(name = "airport_id", referencedColumnName = "airport_id")

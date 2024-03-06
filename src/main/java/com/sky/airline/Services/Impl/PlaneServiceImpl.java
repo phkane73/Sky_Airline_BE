@@ -31,7 +31,6 @@ public class PlaneServiceImpl implements IPlaneService {
         Airport airport = airportRepository.findById(planeDTO.getIdAirport()).get();
         plane.setPlaneName(planeDTO.getPlaneName());
         plane.setOnAirport(airport);
-        plane.setSeatQuanlity(26);
         plane.setOperation(true);
         planeRepository.save(plane);
         return true;

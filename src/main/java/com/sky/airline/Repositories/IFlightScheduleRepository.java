@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface IFlightScheduleRepository extends JpaRepository<FlightSchedule, Integer> {
+public interface IFlightScheduleRepository extends JpaRepository<FlightSchedule, Long> {
 
     List<FlightSchedule> findAllByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(Airport departure, Airport arrival, LocalDateTime start, LocalDateTime end);
 }

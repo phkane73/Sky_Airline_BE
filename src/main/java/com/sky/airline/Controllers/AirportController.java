@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -88,4 +89,15 @@ public class AirportController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/updateprice")
+    public ResponseEntity<?>  updatePrice(@RequestBody Map<String, Object> requset) {
+        return new ResponseEntity<>(flightTimeService.updatePrice(Integer.parseInt(requset.get("id").toString()),
+                Long.parseLong(requset.get("price").toString())),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteflighttime")
+    public ResponseEntity<?>  deleteFlightTime(@RequestParam("id") int id) {
+        flightTimeService.deleteFlightTime(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

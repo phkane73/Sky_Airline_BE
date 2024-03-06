@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public interface IUserService {
+
+    boolean checkEmailExist(String email);
     UserDetails loadUserByUsername(String email) throws UsernameNotFoundException;
 
     Boolean registerVeriflyEmail(User user) throws MessagingException;

@@ -1,5 +1,6 @@
 package com.sky.airline.Entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Data
@@ -16,13 +18,17 @@ import java.time.LocalDateTime;
 public class FlightSchedule implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @ManyToOne
     @JoinColumn(name = "departure_airport", referencedColumnName = "airport_id")
     private Airport departureAirport;
     @ManyToOne
     @JoinColumn(name = "arrival_airport", referencedColumnName = "airport_id")
     private Airport arrivalAirport;
+
+    @OneToMany(mappedBy = "id.flight_schedule_id")
+    private Set<SeatDetail> seatDetails;
+
     private LocalDateTime departureTime;
     private LocalDateTime arrivalTime;
     private String planeName;

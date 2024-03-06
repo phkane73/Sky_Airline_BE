@@ -27,5 +27,5 @@ public class User implements Serializable {
     @NotBlank(message = "Vui lòng nhập password")
     private String password;
     @Pattern(regexp = "(^$|[0-9]{10})", message = "Số điện thoại không hợp lệ")
-    private String sdt;
+    private String phone;
 }

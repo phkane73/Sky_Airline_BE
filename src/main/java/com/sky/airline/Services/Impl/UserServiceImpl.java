@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService, IUserService {
+public class UserServiceImpl implements UserDetailsService, IUserService {
 
     private final IUserRepository iuserRepository;
 
@@ -30,6 +30,12 @@ public class UserService implements UserDetailsService, IUserService {
     private final ISendMailService iSendMailService;
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    @Override
+    public boolean checkEmailExist(String email) {
+        User userExist = iuserRepository.findByEmail(email);
+        return userExist != null;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -44,10 +50,6 @@ public class UserService implements UserDetailsService, IUserService {
     @Override
     @KafkaListener(topics = "emailTopic", groupId = "emailG")
     public Boolean registerVeriflyEmail(User user) throws MessagingException {
-        User userExist = iuserRepository.findByEmail(user.getEmail());
-        if (userExist != null) {
-            return false;
-        }
         iSendMailService.sendEmail(user);
         return true;
     }

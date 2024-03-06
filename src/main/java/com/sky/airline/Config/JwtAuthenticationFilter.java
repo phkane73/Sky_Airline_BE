@@ -1,6 +1,6 @@
 package com.sky.airline.Config;
 
-import com.sky.airline.Services.Impl.UserService;
+import com.sky.airline.Services.Impl.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenProvider tokenProvider;
 
     @Autowired
-    private UserService customUserDetailsService;
+    private UserServiceImpl customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

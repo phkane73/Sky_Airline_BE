@@ -3,11 +3,10 @@ package com.sky.airline.Services.Impl;
 import com.sky.airline.Dto.AirportDTO;
 import com.sky.airline.Dto.FlightScheduleDTO;
 import com.sky.airline.Dto.PlaneDTO;
-import com.sky.airline.Entities.Airport;
-import com.sky.airline.Entities.FlightSchedule;
-import com.sky.airline.Entities.FlightTime;
-import com.sky.airline.Entities.Plane;
+import com.sky.airline.Entities.*;
 import com.sky.airline.Repositories.IFlightScheduleRepository;
+import com.sky.airline.Repositories.ISeatDetailRepository;
+import com.sky.airline.Repositories.ISeatRepository;
 import com.sky.airline.Services.IFlightScheduleService;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +27,12 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
     private final AirportServiceImpl airportService;
 
     private final IFlightScheduleRepository flightScheduleRepository;
+
+    private final ISeatRepository seatRepository;
+
+    private final ISeatDetailRepository seatDetailRepository;
     private final static String dateTimePattern = "yyyy-MM-dd HH:mm";
+
 
     @Override
     public List<FlightSchedule> listSchedule() {
@@ -123,8 +127,23 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
         Airport departureAirport = airportService.findAirportById(departure);
         Airport arrivalAirport = airportService.findAirportById(arrival);
         LocalDateTime start = converToLocalDataTime(date);
-        LocalDateTime end = calculateDate(start,24F);
+        LocalDateTime end = calculateDate(start, 23F);
         return flightScheduleRepository.findAllByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(departureAirport, arrivalAirport, start, end);
+    }
+
+    @Override
+    public void createSeatWithFlightSchedule(long idSchedule) {
+        List<Seat> seats = seatRepository.findAll();
+        long count = seatRepository.count();
+        for (int i=0; i<count; i++){
+            SeatDetail seatDetail = new SeatDetail();
+            FlightSeatKey flightSeatKey = new FlightSeatKey(seats.get(i).getId(),idSchedule);
+            seatDetail.setStatus("AVAILABLE");
+            seatDetail.setId(flightSeatKey);
+            seatDetail.setSeat(seats.get(i));
+            System.out.println(seats.get(i));
+            seatDetailRepository.save(seatDetail);
+        }
     }
 
 
@@ -193,7 +212,7 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
             if (breakPoint == 1) break;
         }
         List<FlightSchedule> flightScheduleList = new ArrayList<>();
-        int index = 0;
+        long index = 0;
         for (FlightScheduleDTO flightScheduleDTO : flightSchedules) {
             Airport from = airportService.findAirportByAirportName(flightScheduleDTO.getFrom().getAirportName());
             Airport to = airportService.findAirportByAirportName(flightScheduleDTO.getTo().getAirportName());
@@ -210,13 +229,12 @@ public class FlightScheduleServiceImpl implements IFlightScheduleService {
             flightSchedule.setFlightCode("SKYD" + flightScheduleDTO.getDepartureTime().getDayOfMonth() +
                     flightScheduleDTO.getDepartureTime().getHour() + "H" + flightSchedules.indexOf(flightScheduleDTO));
             flightScheduleList.add(flightSchedule);
-
             if (action == 1) {
                 flightScheduleRepository.save(flightSchedule);
+                createSeatWithFlightSchedule(flightSchedule.getId());
             }
             index++;
         }
         return flightScheduleList;
     }
-
 }

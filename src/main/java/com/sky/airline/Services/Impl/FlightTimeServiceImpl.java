@@ -45,4 +45,20 @@ public class FlightTimeServiceImpl implements IFlightTimeService {
         return flightTimeList;
     }
 
+    @Override
+    public boolean updatePrice(int id, Long price) {
+        FlightTime flightTime = flightTimeRepository.findById(id).get();
+        if(price > 0){
+            flightTime.setPrice(price);
+            flightTimeRepository.save(flightTime);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void deleteFlightTime(int id) {
+        flightTimeRepository.deleteById(id);
+    }
+
 }
